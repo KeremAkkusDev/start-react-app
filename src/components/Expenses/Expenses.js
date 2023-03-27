@@ -37,8 +37,6 @@ function Expenses({ items }) {
         ) : (
           <p style={{color:"#fff"}}>No expenses found.</p>
         )}
-
-        <button onClick={filterChangeHandler}>Filter Year</button>
       </Card>
     </>
   );
