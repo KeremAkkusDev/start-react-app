@@ -1,20 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../UI/Card";
-import ExpenseItem from "./ExpenseItem";
+import ExpensesChart from "./ExpensesChart";
 import ExpensesFilter from "./ExpensesFilter";
+import ExpensesList from "./ExpensesList";
 
-function Expenses({ items }) {
-  const [filteredYear, setFilteredYear] = useState("All");
+function Expenses({ items, setItems }) {
+  const [filteredMonth, setFilteredMonth] = useState("All");
+  const [totalExpense, setTotalExpense] = useState(0);
 
-  const filterChangeHandler = (selectedYear) => {
-    setFilteredYear(selectedYear);
+  const filterChangeHandler = (selectedMonth) => {
+    setFilteredMonth(selectedMonth);
   };
 
+  useEffect(() => {
+    setTotalExpense(0);
+    filteredExpenses.map((filteredEx) =>
+      setTotalExpense((prev) => prev + filteredEx.amount)
+    );
+  });
+
   const filteredExpenses = items.filter((filtered) => {
-    if (filteredYear === "All") {
+    if (filteredMonth === "All") {
       return items;
     } else {
-      return filtered.date.getFullYear().toString() === filteredYear;
+      return filtered.date.getMonth().toString() === filteredMonth;
     }
   });
 
@@ -22,21 +31,12 @@ function Expenses({ items }) {
     <>
       <Card className="expenses">
         <ExpensesFilter
-          selected={filteredYear}
+          selected={filteredMonth}
           onChangeFilter={filterChangeHandler}
+          totalExpense={totalExpense}
         />
-        {filteredExpenses.length ? (
-          filteredExpenses.map((item, index) => (
-            <ExpenseItem
-              key={index}
-              title={item.title}
-              amount={item.amount}
-              date={item.date}
-            />
-          ))
-        ) : (
-          <p style={{color:"#fff"}}>No expenses found.</p>
-        )}
+        <ExpensesChart expenses={filteredExpenses} />
+        <ExpensesList items={filteredExpenses} setItems={setItems} />
       </Card>
     </>
   );

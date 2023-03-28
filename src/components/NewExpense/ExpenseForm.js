@@ -1,15 +1,31 @@
 import React, { useState } from "react";
-function ExpenseForm({ onSaveExpenseData }) {
+function ExpenseForm({ onSaveExpenseData, onCancel }) {
   const [newExpense, setNewExpense] = useState({
     title: "",
-    amount: "",
+    amount: 0,
     date: "",
   });
 
   const submitHandler = (e) => {
     e.preventDefault();
-    onSaveExpenseData(newExpense)
-    setNewExpense({ title: "", amount: "" });
+    onSaveExpenseData(newExpense);
+    setNewExpense({ title: "", amount: "", date: "" });
+  };
+
+  const setTitle = (e) => {
+    setNewExpense((prevState) => {
+      return { ...prevState, title: e.target.value };
+    });
+  };
+  const setAmount = (e) => {
+    setNewExpense((prevState) => {
+      return { ...prevState, amount: parseFloat(e.target.value) };
+    });
+  };
+  const setDate = (e) => {
+    setNewExpense((prevState) => {
+      return { ...prevState, date: new Date(e.target.value) };
+    });
   };
 
   return (
@@ -19,41 +35,31 @@ function ExpenseForm({ onSaveExpenseData }) {
           <label>Date</label>
           <input
             type="date"
-            min="2019-01-01"
+            min="2023-01-01"
             max="2023-12-31"
-            onChange={(e) => {
-              setNewExpense((prevState) => {
-                return { ...prevState, date: new Date(e.target.value) };
-              });
-            }}
+            onChange={setDate}
           />
         </div>
         <div className="new-expense__control">
           <label>Title</label>
-          <input
-            type="text"
-            value={newExpense.title}
-            onChange={(e) => {
-              setNewExpense((prevState) => {
-                return { ...prevState, title: e.target.value };
-              });
-            }}
-          />
+          <input type="text" value={newExpense.title} onChange={setTitle} />
         </div>
         <div className="new-expense__control">
           <label>Amount</label>
           <input
             type="number"
             value={newExpense.amount}
-            onChange={(e) => {
-              setNewExpense((prevState) => {
-                return { ...prevState, amount: Number(e.target.value) };
-              });
+            onFocus={(e) => {
+              e.target.value = "";
             }}
+            onChange={setAmount}
           />
         </div>
       </div>
       <div className="new-expense__actions">
+        <button type="button" onClick={onCancel}>
+          Cancel
+        </button>
         <button type="submit">Add Expense</button>
       </div>
     </form>
